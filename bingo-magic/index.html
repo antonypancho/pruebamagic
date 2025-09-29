@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Bingo Magic - Juega tu Cartón</title>
+<style>
+  :root {
+    --fondo: #121212;
+    --texto: #ffffff;
+    --carton: #1b1b1b;
+    --marcado: #2196f3;
+    --borde: #ffffff;
+    --free-bg: #444444;
+
+    /* Zoom proporcional perfecto */
+    --escalaCarton: 1;          /* Escala inicial (se guarda en localStorage) */
+    --tamanoCelda: 50px;        /* Tamaño base de la celda */
+    --tamanoFuente: 28px;       /* Tamaño base de los números */
+    --tamanoFuenteHeader: 24px; /* Tamaño base de las letras BINGO */
+  }
+
+  body {
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  .temas { margin: 16px 0; }
+  .tema {
+    display: inline-block;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    margin: 0 10px;
+    cursor: pointer;
+    border: 2px solid var(--borde);
+  }
+
+  .controls { margin:20px; }
+  .controls button { margin: 0 4px; }
+
+  .carton {
+    display:inline-block;
+    margin:15px;
+    padding:10px;
+    background:var(--carton);
+    border-radius:8px;
+  }
+  .carton h3 { margin:5px 0; }
+
+  table { border-collapse:collapse; margin:auto; }
+
+  th {
+    width: calc(var(--tamanoCelda) * var(--escalaCarton));
+    height: calc(40px * var(--escalaCarton));
+    border:1px solid var(--borde);
+    font-size: calc(var(--tamanoFuenteHeader) * var(--escalaCarton));
+    color:#ffeb3b;
+    text-align:center;
+  }
+
+  td {
+    width: calc(var(--tamanoCelda) * var(--escalaCarton));
+    height: calc(var(--tamanoCelda) * var(--escalaCarton));
+    border:1px solid var(--borde);
+    cursor:pointer;
+    font-weight:bold;
+    text-align:center;
+    font-size: calc(var(--tamanoFuente) * var(--escalaCarton));
+    color: var(--texto);
+    background: transparent;
+  }
+
+  td.free { background: var(--free-bg); color:#000; cursor:default; }
+  td.marcado1 { background:var(--marcado); color:#fff; }
+
+  #status { margin-top:10px; font-size:0.9em; color:#ccc; }
+</style>
+</head>
+<body>
+
+<h1>🎟️ Juega tu Cartón</h1>
+
+<!-- Selector de temas -->
+<div class="temas">
+  <div class="tema" style="background:#2196f3;" onclick="cambiarTema('azul')" title="Azul (oscuro)"></div>
+  <div class="tema" style="background:#4caf50;" onclick="cambiarTema('verde')" title="Verde (claro)"></div>
+  <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)"></div>
+</div>
+
+<div class="controls">
+  <input type="number" id="cartonInput" placeholder="Número de cartón">
+  <button id="agregarBtn" disabled>Agregar</button>
+  <button id="limpiarBtn">Limpiar</button>
+  <button id="quitarBtn">Quitar</button>
+  <button onclick="ajustarZoom(0.1)">+</button>
+  <button onclick="ajustarZoom(-0.1)">-</button>
+  <div id="status"></div>
+</div>
+
+<div id="cartonesContainer"></div>
+
+<script>
+let cartonesData = [];
+let cartonesMostrados = [];
+
+const agregarBtn = document.getElementById('agregarBtn');
+const limpiarBtn = document.getElementById('limpiarBtn');
+const quitarBtn = document.getElementById('quitarBtn');
+const statusEl = document.getElementById('status');
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Restaurar tema guardado
+  const temaGuardado = localStorage.getItem("temaBingo");
+  if (temaGuardado) cambiarTema(temaGuardado);
+
+  // Restaurar zoom guardado
+  const zoomGuardado = localStorage.getItem("zoomCarton");
+  if (zoomGuardado) {
+    document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
+  }
+
+  // Cargar CSV y luego restaurar estado
+  cargarCSV().then(() => {
+    agregarBtn.disabled = false;
+    restaurarEstado();
+  });
+
+  agregarBtn.addEventListener('click', agregarCarton);
+  limpiarBtn.addEventListener('click', limpiarMarcas);
+  quitarBtn.addEventListener('click', quitarCartones);
+});
+
+async function cargarCSV(){
+  statusEl.textContent = 'Cargando cartones...';
+  try {
+    const res = await fetch('cartones.csv');
+    const text = await res.text();
+    cartonesData = parseCSV(text);
+    statusEl.textContent = `CSV cargado: ${cartonesData.length} cartones disponibles.`;
+  } catch (e) {
+    statusEl.textContent = 'Error cargando CSV. Verifica la ruta o que esté publicado.';
+    agregarBtn.disabled = true;
+  }
+}
+
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
+  const cartones = [];
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
+    if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
+    const carton = [];
+    for (let r = 0; r < 5 && i < lines.length; r++, i++) {
+      const fila = lines[i].split(',').map(n => n.trim());
+      carton.push(fila);
+    }
+    if (carton.length === 5) cartones.push(carton);
+  }
+  return cartones;
+}
+
+function agregarCarton(){
+  const numero = parseInt(document.getElementById("cartonInput").value, 10);
+  if (isNaN(numero)) { alert("Ingresa un número."); return; }
+  if (numero < 1 || numero > cartonesData.length) { alert("Número inválido."); return; }
+  if (cartonesMostrados.includes(numero)) { alert("Ese cartón ya está en pantalla."); return; }
+
+  renderCarton(numero);
+  guardarEstado();
+}
+
+function renderCarton(numero){
+  const carton = cartonesData[numero - 1];
+  if (!carton) return;
+  const div = document.createElement("div");
+  div.className = "carton";
+  div.dataset.numero = numero;
+  div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
+  document.getElementById("cartonesContainer").appendChild(div);
+  cartonesMostrados.push(numero);
+}
+
+function crearTabla(carton, numero){
+  let html = '';
+  // Encabezado BINGO
+  const letras = ['B','I','N','G','O'];
+  html += '<tr>';
+  for (let c = 0; c < 5; c++) {
+    html += `<th>${letras[c]}</th>`;
+  }
+  html += '</tr>';
+
+  // Filas con números
+  for (let r = 0; r < 5; r++) {
+    html += '<tr>';
+    for (let c = 0; c < 5; c++) {
+      const val = carton[r][c];
+      const classes = (val.toUpperCase && val.toUpperCase() === 'X') ? 'free' : '';
+      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" onclick="cambiarColor(this)">${val}</td>`;
+    }
+    html += '</tr>';
+  }
+  return html;
+}
+
+function cambiarColor(td){
+  if (td.classList.contains('free')) return;
+  td.classList.toggle("marcado1");
+  guardarEstado();
+}
+
+function limpiarMarcas(){
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
+    td.classList.remove('marcado1');
+  });
+  guardarEstado();
+}
+
+function quitarCartones(){
+  document.getElementById("cartonesContainer").innerHTML = '';
+  cartonesMostrados = [];
+  localStorage.removeItem("estadoCartones");
+  statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
+}
+
+function guardarEstado(){
+  const estado = {
+    cartones: cartonesMostrados.slice(),
+    marcados: []
+  };
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
+    const carton = td.dataset.carton;
+    const pos = td.dataset.pos;
+    estado.marcados.push({carton, pos});
+  });
+  localStorage.setItem("estadoCartones", JSON.stringify(estado));
+}
+
+function restaurarEstado(){
+  const estadoStr = localStorage.getItem("estadoCartones");
+  if (!estadoStr) return;
+  let estado;
+  try { estado = JSON.parse(estadoStr); } catch { return; }
+
+  if (Array.isArray(estado.cartones)) {
+    estado.cartones.forEach(num => renderCarton(num));
+  }
+  if (Array.isArray(estado.marcados)) {
+    estado.marcados.forEach(m => {
+      const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
+      if (td) td.classList.add('marcado1');
+    });
+  }
+}
+
+/* Zoom proporcional perfecto (+ y -) */
+function ajustarZoom(delta){
+  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+  escala += delta;
+  if (escala < 0.5) escala = 0.5; // mínimo
+  if (escala > 2) escala = 2;     // máximo
+  document.documentElement.style.setProperty('--escalaCarton', escala);
+  localStorage.setItem("zoomCarton", escala);
+}
+
+/* Temas */
+function cambiarTema(color){
+  if (color === 'azul'){
+    document.documentElement.style.setProperty('--fondo', '#121212');
+    document.documentElement.style.setProperty('--carton', '#1b1b1b');
+    document.documentElement.style.setProperty('--texto', '#ffffff');
+    document.documentElement.style.setProperty('--marcado', '#2196f3');
+    document.documentElement.style.setProperty('--borde', '#ffffff');
+    document.documentElement.style.setProperty('--free-bg', '#444444');
+  } else if (color === 'verde'){
+    // Tema claro como pediste
+    document.documentElement.style.setProperty('--fondo', '#ffffff');   // fondo página blanco
+    document.documentElement.style.setProperty('--carton', '#f5f5f5');  // cartón gris clarito
+    document.documentElement.style.setProperty('--texto', '#000000');   // números en negro
+    document.documentElement.style.setProperty('--marcado', '#4caf50'); // marcado verde
+    document.documentElement.style.setProperty('--borde', '#333333');   // bordes visibles sobre blanco
+    document.documentElement.style.setProperty('--free-bg', '#e0e0e0'); // free más suave
+  } else if (color === 'morado'){
+    document.documentElement.style.setProperty('--fondo', '#1a0d1f');
+    document.documentElement.style.setProperty('--carton', '#2a1630');
+    document.documentElement.style.setProperty('--texto', '#ffffff');
+    document.documentElement.style.setProperty('--marcado', '#9c27b0');
+    document.documentElement.style.setProperty('--borde', '#ffffff');
+    document.documentElement.style.setProperty('--free-bg', '#444444');
+  }
+  localStorage.setItem("temaBingo", color);
+}
+</script>
+</body>
+</html>
