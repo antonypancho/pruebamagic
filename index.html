@@ -270,6 +270,9 @@ function limpiarMarcas(){
     td.classList.remove('marcado1');
   });
   guardarEstado();
+  // 👇 Reiniciar también la guía de dinámicas
+  localStorage.removeItem("guiaFigura"); // borrar figura guardada
+  crearGuia();                           // volver a dibujar la guía limpia
 }
 
 function quitarCartones(){
@@ -419,4 +422,5 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
