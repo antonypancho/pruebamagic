@@ -277,6 +277,9 @@ function quitarCartones(){
   cartonesMostrados = [];
   localStorage.removeItem("estadoCartones");
   statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
+  // 👇 Reiniciar también la guía de dinámicas
+  localStorage.removeItem("guiaFigura"); // borrar guardado
+  crearGuia();                           // volver a dibujar la tabla vacía
 }
 
 /* Persistencia de cartones y marcas */
@@ -416,3 +419,4 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
