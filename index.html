@@ -20,7 +20,7 @@
   }
 
  .toolbar {
-  position: fixed;
+  position: static;
   top: 0; left: 0; right: 0;
   background: #333;
   color: #fff;
@@ -136,8 +136,6 @@
 </head>
 <body>
 
-<h1>🎟️ Juega tu Cartón</h1>
-
 <div class="toolbar">
   <input type="number" id="cartonInput" placeholder="Número de cartón">
   <button id="agregarBtn" disabled>Agregar</button>
@@ -156,6 +154,8 @@
   <div id="status"></div>
 </div>
 
+<h1>🎟️ Juega tu Cartón</h1>
+  
 
 <!-- Guía de figura 5x5 -->
 <h2>🧭 Figura que estamos jugando</h2>
@@ -208,7 +208,7 @@ async function cargarCSV(){
     const res = await fetch('cartones.csv');
     const text = await res.text();
     cartonesData = parseCSV(text);
-    statusEl.textContent = `CSV cargado: ${cartonesData.length} cartones disponibles.`;
+    statusEl.textContent = `✅`;
   } catch (e) {
     statusEl.textContent = 'Error cargando CSV. Verifica la ruta o que esté publicado.';
     agregarBtn.disabled = true;
@@ -440,4 +440,5 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
