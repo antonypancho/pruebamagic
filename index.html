@@ -19,6 +19,33 @@
     --tamanoFuenteHeader: 24px; /* Tamaño base de las letras BINGO */
   }
 
+ .toolbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+
+.temas {
+  display: flex;
+  gap: 8px;
+  margin-left: 10px; /* separa un poco de los botones */
+}
+
+.tema {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
   body {
     background: var(--fondo);
     color: var(--texto);
@@ -27,17 +54,6 @@
     margin: 0;
     padding: 20px;
   }
-
-  .temas { margin: 16px 0; }
-  .tema {
-    display: inline-block;
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    margin: 0 10px;
-    cursor: pointer;
-    border: 2px solid var(--borde);
-  }
-
   .controls { margin:20px; }
   .controls button { margin: 0 4px; }
 
@@ -122,22 +138,24 @@
 
 <h1>🎟️ Juega tu Cartón</h1>
 
-<!-- Selector de temas -->
-<div class="temas">
-  <div class="tema" style="background:#2196f3;" onclick="cambiarTema('azul')" title="Azul (oscuro)"></div>
-  <div class="tema" style="background:#4caf50;" onclick="cambiarTema('verde')" title="Verde (claro)"></div>
-  <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)"></div>
-</div>
-
-<div class="controls">
+<div class="toolbar">
   <input type="number" id="cartonInput" placeholder="Número de cartón">
   <button id="agregarBtn" disabled>Agregar</button>
   <button id="limpiarBtn">Limpiar</button>
   <button id="quitarBtn">Quitar</button>
   <button onclick="ajustarZoom(0.1)">+</button>
   <button onclick="ajustarZoom(-0.1)">-</button>
+
+  <!-- 👇 ahora los temas van aquí -->
+  <div class="temas">
+    <div class="tema" style="background:#2196f3;" onclick="cambiarTema('azul')" title="Azul (oscuro)"></div>
+    <div class="tema" style="background:#4caf50;" onclick="cambiarTema('verde')" title="Verde (claro)"></div>
+    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)"></div>
+  </div>
+
   <div id="status"></div>
 </div>
+
 
 <!-- Guía de figura 5x5 -->
 <h2>🧭 Figura que estamos jugando</h2>
