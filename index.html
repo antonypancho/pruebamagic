@@ -24,6 +24,8 @@
     color: var(--texto);
     font-family: Arial, sans-serif;
     text-align: center;
+    margin: 0;
+    padding: 20px;
   }
 
   .temas { margin: 16px 0; }
@@ -69,12 +71,51 @@
     font-size: calc(var(--tamanoFuente) * var(--escalaCarton));
     color: var(--texto);
     background: transparent;
+    position: relative;
   }
 
   td.free { background: var(--free-bg); color:#000; cursor:default; }
   td.marcado1 { background:var(--marcado); color:#fff; }
 
+  /* Borde guía: solo borde resaltado en cartones activos */
+  td.bordeGuia {
+    outline: 3px solid #4caf50;
+    outline-offset: -3px; /* para que quede al ras del borde */
+  }
+
   #status { margin-top:10px; font-size:0.9em; color:#ccc; }
+
+  /* Guía de figura */
+  #guiaFigura {
+    margin: 10px auto 20px;
+    display: inline-block;
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  #tablaGuia td {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #bbb;
+    text-align: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #000;
+  }
+
+  #tablaGuia td.relleno {
+    background: #4caf50;
+    color: #fff;
+  }
+
+  #tablaGuia td.centro {
+    font-weight: bold;
+    cursor: default;
+    background: #eaeaea;
+  }
 </style>
 </head>
 <body>
@@ -96,6 +137,12 @@
   <button onclick="ajustarZoom(0.1)">+</button>
   <button onclick="ajustarZoom(-0.1)">-</button>
   <div id="status"></div>
+</div>
+
+<!-- Guía de figura 5x5 -->
+<h2>🧭 Figura que estamos jugando</h2>
+<div id="guiaFigura">
+  <table id="tablaGuia"></table>
 </div>
 
 <div id="cartonesContainer"></div>
@@ -120,10 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
   }
 
-  // Cargar CSV y luego restaurar estado
+  // Crear guía y restaurar su estado
+  crearGuia();
+  restaurarGuia();
+
+  // Cargar CSV y luego restaurar estado de cartones
   cargarCSV().then(() => {
     agregarBtn.disabled = false;
     restaurarEstado();
+    // Aplicar guías a cartones ya renderizados
+    aplicarGuiaBordes();
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
@@ -169,6 +222,7 @@ function agregarCarton(){
 
   renderCarton(numero);
   guardarEstado();
+  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
 }
 
 function renderCarton(numero){
@@ -225,6 +279,7 @@ function quitarCartones(){
   statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
 }
 
+/* Persistencia de cartones y marcas */
 function guardarEstado(){
   const estado = {
     cartones: cartonesMostrados.slice(),
@@ -292,6 +347,72 @@ function cambiarTema(color){
   }
   localStorage.setItem("temaBingo", color);
 }
+
+/* =========================
+   Guía de figura 5x5
+   ========================= */
+function crearGuia(){
+  const tabla = document.getElementById("tablaGuia");
+  tabla.innerHTML = '';
+  for(let r=0; r<5; r++){
+    const fila = document.createElement("tr");
+    for(let c=0; c<5; c++){
+      const celda = document.createElement("td");
+      celda.dataset.pos = `${r},${c}`;
+      if(r === 2 && c === 2){
+        celda.textContent = 'X';
+        celda.classList.add('centro');
+      } else {
+        celda.addEventListener('click', () => {
+          celda.classList.toggle('relleno');  // guía se rellena
+          guardarGuia();
+          aplicarGuiaBordes();                 // cartones solo borde
+        });
+      }
+      fila.appendChild(celda);
+    }
+    tabla.appendChild(fila);
+  }
+}
+
+/* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
+function aplicarGuiaBordes(){
+  // Limpiar bordes anteriores
+  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td => {
+    td.classList.remove('bordeGuia');
+  });
+
+  // Agregar bordes según guía
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
+    const pos = celda.dataset.pos;
+    document.querySelectorAll(`#cartonesContainer td[data-pos="${pos}"]`).forEach(td => {
+      td.classList.add('bordeGuia');
+    });
+  });
+}
+
+/* Persistencia de la figura guía */
+function guardarGuia(){
+  const rellenos = [];
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
+    rellenos.push(celda.dataset.pos);
+  });
+  localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
+}
+
+function restaurarGuia(){
+  const data = localStorage.getItem('guiaFigura');
+  if (!data) return;
+  let rellenos;
+  try { rellenos = JSON.parse(data); } catch { return; }
+  rellenos.forEach(pos => {
+    const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
+    if (celda) celda.classList.add('relleno');
+  });
+}
+
+/* Reaplicar guía cuando se agregan nuevos cartones (ya se llama en agregarCarton) */
+
 </script>
 </body>
 </html>
