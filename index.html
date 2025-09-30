@@ -24,13 +24,19 @@
   top: 0; left: 0; right: 0;
   background: #333;
   color: #fff;
-  padding: 10px;
+  padding: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   z-index: 1000;
+}
+
+.toolbar input,
+.toolbar button {
+  padding: 10px 14px;     /* 👈 botones e input más grandes */
+  font-size: 16px;
 }
 
 .temas {
@@ -155,7 +161,6 @@
 </div>
 
 <h1>🎟️ Juega tu Cartón</h1>
-  
 
 <!-- Guía de figura 5x5 -->
 <h2>🧭 Figura que estamos jugando</h2>
@@ -440,5 +445,4 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
-
 
