@@ -289,13 +289,20 @@ function cambiarColor(td){
 }
 
 function limpiarMarcas(){
+  // Quitar marcas de los cartones
   document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
     td.classList.remove('marcado1');
   });
   guardarEstado();
-  // 👇 Reiniciar también la guía de dinámicas
-  localStorage.removeItem("guiaFigura"); // borrar figura guardada
-  crearGuia();                           // volver a dibujar la guía limpia
+
+  // 👇 Quitar también los bordes guía
+  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td=>{
+    td.classList.remove('bordeGuia');
+  });
+
+  // 👇 Reiniciar la guía de dinámicas
+  localStorage.removeItem("guiaFigura");
+  crearGuia();
 }
 
 function quitarCartones(){
@@ -445,4 +452,5 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
