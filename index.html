@@ -14,6 +14,15 @@
     gtag('config', 'G-0GJL6DJCEB');
   </script>
 
+  <!-- Highlight.io -->
+  <script>
+    window.HIGHLIGHT_PROJECT_ID = "6gl56qme";
+  </script>
+  <script src="https://unpkg.com/highlight.run" async></script>
+
+  <!-- Particles.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
   <style>
     :root {
       --bg1: #6c5ce7;
@@ -28,18 +37,36 @@
       font-family: 'Segoe UI', Roboto, Arial, sans-serif;
       background: radial-gradient(circle at top, var(--bg1), var(--bg2));
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px;
-      box-sizing: border-box;
       text-align: center;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    #particles-js {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 rgba(0,212,255,0.4); }
+      50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(0,212,255,0.6); }
+      100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,212,255,0.4); }
     }
 
     header {
       margin-bottom: 28px;
       max-width: 920px;
       width: 100%;
+      animation: fadeIn 1s ease-out forwards;
     }
 
     header h1 {
@@ -83,7 +110,6 @@
       min-width: 260px;
       max-width: 320px;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
       animation: pulse 2.5s infinite;
     }
 
@@ -117,12 +143,6 @@
       font-size: 1rem;
       color: #00f0ff;
       font-weight: 600;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 rgba(0,212,255,0.4); }
-      50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(0,212,255,0.6); }
-      100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,212,255,0.4); }
     }
 
     .floating-whatsapp {
@@ -174,6 +194,8 @@
   </style>
 </head>
 <body>
+  <div id="particles-js"></div>
+
   <header>
     <h1>✨ Bienvenidos a BingoMagic ✨</h1>
     <p>
@@ -184,7 +206,6 @@
   </header>
 
   <div class="buttons">
-    <!-- Tarjeta 8:00PM -->
     <a href="whatsapp://chat?code=Cz8wYvYq5XiDqq5M02ZkLY" class="bingo-card">
       <h2>🎉 Bingo Magic 8:00PM</h2>
       <ul>
@@ -192,10 +213,9 @@
         <li>Premios: <strong>35.000BS</strong></li>
         <li>Rondas: <strong>8</strong> (diarias)</li>
       </ul>
-      <div class="click-hint">👆 Click aquí →</div>
+      <div class="click-hint">👆 Click aquí 👆</div>
     </a>
 
-    <!-- Tarjeta 10:00PM -->
     <a href="whatsapp://chat?code=GLY4MmWwnyJ730G2QpDAUo" class="bingo-card">
       <h2>🌙 Bingo Magic Night 10:00PM</h2>
       <ul>
@@ -203,11 +223,10 @@
         <li>Premios: <strong>15.000BS</strong></li>
         <li>Rondas: <strong>6</strong> (diarias)</li>
       </ul>
-      <div class="click-hint">👆 Click aquí →</div>
+      <div class="click-hint">👆 Click aquí 👆</div>
     </a>
   </div>
 
-  <!-- Botón flotante de soporte vía WhatsApp -->
   <a href="https://wa.me/message/Y6XR7C5SG2FBB1" target="_blank" class="floating-whatsapp" title="Ayuda vía WhatsApp">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Soporte" />
   </a>
@@ -215,5 +234,29 @@
   <footer>
     &copy; 2025 BingoMagic.online — Diversión mágica en cada partida
   </footer>
+
+    <script>
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 40 },
+        size: { value: 3 },
+        color: { value: "#00d4ff" },
+        move: { speed: 1 },
+        line_linked: { enable: false },
+        opacity: { value: 0.6 }
+      },
+      interactivity: {
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" }
+        },
+        modes: {
+          repulse: { distance: 100 },
+          push: { particles_nb: 4 }
+        }
+      },
+      retina_detect: true
+    });
+  </script>
 </body>
 </html>
