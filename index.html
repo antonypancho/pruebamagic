@@ -1,461 +1,260 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Bingo Magic - Juega tu Cartón</title>
-<style>
-  :root {
-    --fondo: #121212;
-    --texto: #ffffff;
-    --carton: #1b1b1b;
-    --marcado: #2196f3;
-    --borde: #ffffff;
-    --free-bg: #444444;
+  <meta charset="UTF-8" />
+  <title>BingoMagic Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    /* Zoom proporcional perfecto */
-    --escalaCarton: 1;          /* Escala inicial (se guarda en localStorage) */
-    --tamanoCelda: 50px;        /* Tamaño base de la celda */
-    --tamanoFuente: 28px;       /* Tamaño base de los números */
-    --tamanoFuenteHeader: 24px; /* Tamaño base de las letras BINGO */
-  }
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0GJL6DJCEB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0GJL6DJCEB');
+  </script>
 
- .toolbar {
-  position: static;
-  top: 0; left: 0; right: 0;
-  background: #333;
-  color: #fff;
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  z-index: 1000;
-}
+  <style>
+    :root {
+      --bg1: #6c5ce7;
+      --bg2: #0e1020;
+      --accent: #00d4ff;
+      --card-bg: linear-gradient(135deg, rgba(0,212,255,0.14), rgba(108,92,231,0.14));
+      --glass-border: rgba(255,255,255,0.08);
+    }
 
-.toolbar input,
-.toolbar button {
-  padding: 10px 14px;     /* 👈 botones e input más grandes */
-  font-size: 16px;
-}
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+      box-sizing: border-box;
+      text-align: center;
+    }
 
-.temas {
-  display: flex;
-  gap: 8px;
-  margin-left: 10px; /* separa un poco de los botones */
-}
+    header {
+      margin-bottom: 28px;
+      max-width: 920px;
+      width: 100%;
+    }
 
-.tema {
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #fff;
-}
+    header h1 {
+      font-size: 2.25rem;
+      margin: 0;
+      color: var(--accent);
+      letter-spacing: 0.6px;
+      line-height: 1.05;
+    }
 
-  body {
-    background: var(--fondo);
-    color: var(--texto);
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-  }
-  .controls { margin:20px; }
-  .controls button { margin: 0 4px; }
+    header p {
+      max-width: 720px;
+      margin: 10px auto 0;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      color: #e6e8ff;
+      opacity: 0.95;
+    }
 
-  .carton {
-    display:inline-block;
-    margin:15px;
-    padding:10px;
-    background:var(--carton);
-    border-radius:8px;
-  }
-  .carton h3 { margin:5px 0; }
+    .video-container {
+      margin: 28px auto;
+      max-width: 720px;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
 
-  table { border-collapse:collapse; margin:auto; }
+    .buttons {
+      display: flex;
+      gap: 18px;
+      margin-top: 36px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: stretch;
+      width: 100%;
+      max-width: 920px;
+    }
 
-  th {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
-    height: calc(40px * var(--escalaCarton));
-    border:1px solid var(--borde);
-    font-size: calc(var(--tamanoFuenteHeader) * var(--escalaCarton));
-    color:#ffeb3b;
-    text-align:center;
-  }
+    .bingo-card {
+      text-align: left;
+      padding: 18px 22px;
+      border-radius: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+      min-width: 260px;
+      max-width: 320px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-  td {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
-    height: calc(var(--tamanoCelda) * var(--escalaCarton));
-    border:1px solid var(--borde);
-    cursor:pointer;
-    font-weight:bold;
-    text-align:center;
-    font-size: calc(var(--tamanoFuente) * var(--escalaCarton));
-    color: var(--texto);
-    background: transparent;
-    position: relative;
-  }
+    .bingo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+    }
 
-  td.free { background: var(--free-bg); color:#000; cursor:default; }
-  td.marcado1 { background:var(--marcado); color:#fff; }
+    .bingo-card h2 {
+      font-size: 1.2rem;
+      margin: 0 0 10px;
+      color: var(--accent);
+    }
 
-  /* Borde guía: solo borde resaltado en cartones activos */
-  td.bordeGuia {
-    outline: 3px solid #0542b4;
-    outline-offset: -3px; /* para que quede al ras del borde */
-  }
+    .bingo-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e8eaff;
+    }
 
-  #status { margin-top:10px; font-size:0.9em; color:#ccc; }
+    .bingo-card ul li strong {
+      color: #fff;
+      font-weight: bold;
+    }
 
-  /* Guía de figura */
-  #guiaFigura {
-    margin: 10px auto 20px;
-    display: inline-block;
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-  }
+    .click-hint {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #00f0ff;
+      font-weight: 600;
+    }
 
-  #tablaGuia td {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #bbb;
-    text-align: center;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: #000;
-  }
+    .btn.secondary {
+      padding: 16px 24px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      color: #f2f4ff;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 200px;
+    }
 
-  #tablaGuia td.relleno {
-    background: #e0dd13;
-    color: #fff;
-  }
+    .btn.secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
 
-  #tablaGuia td.centro {
-    font-weight: bold;
-    cursor: default;
-    background: #eaeaeac5;
-  }
-</style>
+    .floating-whatsapp {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      background: #25D366;
+      border-radius: 50%;
+      padding: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .floating-whatsapp:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    }
+
+    .floating-whatsapp img {
+      width: 32px;
+      height: 32px;
+      display: block;
+    }
+
+    footer {
+      margin-top: 42px;
+      font-size: 0.9rem;
+      color: #cfcfe6;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 420px) {
+      .bingo-card {
+        min-width: 48%;
+        max-width: 48%;
+        padding: 14px;
+        font-size: 0.95rem;
+      }
+
+      .bingo-card h2 {
+        font-size: 1rem;
+      }
+
+      .bingo-card ul {
+        font-size: 0.9rem;
+      }
+
+      .btn.secondary {
+        font-size: 0.95rem;
+        padding: 12px 16px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <h1>✨ Bienvenidos a BingoMagic ✨</h1>
+    <p>
+      Nuestra app te permite jugar tus cartones de bingo en línea de forma fácil y divertida.
+      Selecciona la partida en la que quieres participar y sigue el juego en tiempo real.
+      Marca tus casillas, canta ¡Bingo! y disfruta de la magia.
+    </p>
+  </header>
+  <div class="buttons">
+    <!-- Tarjeta 8:00PM -->
+    <a href="whatsapp://chat?code=Cz8wYvYq5XiDqq5M02ZkLY" class="bingo-card">
+      <h2>🎉 Bingo Magic 8:00PM</h2>
+      <ul>
+        <li>Cartón: <strong>125BS</strong></li>
+        <li>Premios: <strong>35.000BS</strong></li>
+        <li>Rondas: <strong>8</strong> (diarias)</li>
+      </ul>
+      <div class="click-hint">👆 Click aquí →</div>
+    </a>
+        <!-- Tarjeta 10:00PM -->
+    <a href="whatsapp://chat?code=GLY4MmWwnyJ730G2QpDAUo" class="bingo-card">
+      <h2>🌙 Bingo Magic Night 10:00PM</h2>
+      <ul>
+        <li>Cartón: <strong>75BS</strong></li>
+        <li>Premios: <strong>15.000BS</strong></li>
+        <li>Rondas: <strong>6</strong> (diarias)</li>
+      </ul>
+      <div class="click-hint">👆 Click aquí →</div>
+      </a>
+  </div>
+  
+  <!-- Botón flotante de soporte vía WhatsApp -->
+  <a href="https://wa.me/message/Y6XR7C5SG2FBB1" target="_blank" class="floating-whatsapp" title="Ayuda vía WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Soporte" />
+  </a>
 
-<div class="toolbar">
-  <input type="number" id="cartonInput" placeholder="Número de cartón">
-  <button id="agregarBtn" disabled>Agregar</button>
-  <button id="limpiarBtn">Limpiar</button>
-  <button id="quitarBtn">Quitar</button>
-  <button onclick="ajustarZoom(0.1)">+</button>
-  <button onclick="ajustarZoom(-0.1)">-</button>
-
-  <!-- 👇 ahora los temas van aquí -->
-  <div class="temas">
-    <div class="tema" style="background:#2196f3;" onclick="cambiarTema('azul')" title="Azul (oscuro)"></div>
-    <div class="tema" style="background:#4caf50;" onclick="cambiarTema('verde')" title="Verde (claro)"></div>
-    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)"></div>
+  <!-- Video insertado -->
+  <div class="video-container">
+    <iframe
+      src="https://drive.google.com/file/d/1Ra8jRNvNVFcQmrJ0JdW2d932CcGHX-lI/edit"
+      title="Video BingoMagic"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
   </div>
 
-  <div id="status"></div>
-</div>
-
-<h1>🎟️ Juega tu Cartón</h1>
-
-<!-- Guía de figura 5x5 -->
-<h2>🧭 Figura que estamos jugando</h2>
-<div id="guiaFigura">
-  <table id="tablaGuia"></table>
-</div>
-
-<div id="cartonesContainer"></div>
-
-<script>
-let cartonesData = [];
-let cartonesMostrados = [];
-
-const agregarBtn = document.getElementById('agregarBtn');
-const limpiarBtn = document.getElementById('limpiarBtn');
-const quitarBtn = document.getElementById('quitarBtn');
-const statusEl = document.getElementById('status');
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Restaurar tema guardado
-  const temaGuardado = localStorage.getItem("temaBingo");
-  if (temaGuardado) cambiarTema(temaGuardado);
-
-  // Restaurar zoom guardado
-  const zoomGuardado = localStorage.getItem("zoomCarton");
-  if (zoomGuardado) {
-    document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
-  }
-
-  // Crear guía y restaurar su estado
-  crearGuia();
-  restaurarGuia();
-
-  // Cargar CSV y luego restaurar estado de cartones
-  cargarCSV().then(() => {
-    agregarBtn.disabled = false;
-    restaurarEstado();
-    // Aplicar guías a cartones ya renderizados
-    aplicarGuiaBordes();
-  });
-
-  agregarBtn.addEventListener('click', agregarCarton);
-  limpiarBtn.addEventListener('click', limpiarMarcas);
-  quitarBtn.addEventListener('click', quitarCartones);
-});
-
-async function cargarCSV(){
-  statusEl.textContent = 'Cargando cartones...';
-  try {
-    const res = await fetch('cartones.csv');
-    const text = await res.text();
-    cartonesData = parseCSV(text);
-    statusEl.textContent = `✅`;
-  } catch (e) {
-    statusEl.textContent = 'Error cargando CSV. Verifica la ruta o que esté publicado.';
-    agregarBtn.disabled = true;
-  }
-}
-
-function parseCSV(text){
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
-  const cartones = [];
-  let i = 0;
-  while (i < lines.length) {
-    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
-    if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
-    const carton = [];
-    for (let r = 0; r < 5 && i < lines.length; r++, i++) {
-      const fila = lines[i].split(',').map(n => n.trim());
-      carton.push(fila);
-    }
-    if (carton.length === 5) cartones.push(carton);
-  }
-  return cartones;
-}
-
-function agregarCarton(){
-  const numero = parseInt(document.getElementById("cartonInput").value, 10);
-  if (isNaN(numero)) { alert("Ingresa un número."); return; }
-  if (numero < 1 || numero > cartonesData.length) { alert("Número inválido."); return; }
-  if (cartonesMostrados.includes(numero)) { alert("Ese cartón ya está en pantalla."); return; }
-
-  renderCarton(numero);
-  guardarEstado();
-  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
-}
-
-function renderCarton(numero){
-  const carton = cartonesData[numero - 1];
-  if (!carton) return;
-  const div = document.createElement("div");
-  div.className = "carton";
-  div.dataset.numero = numero;
-  div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
-  document.getElementById("cartonesContainer").appendChild(div);
-  cartonesMostrados.push(numero);
-}
-
-function crearTabla(carton, numero){
-  let html = '';
-  // Encabezado BINGO
-  const letras = ['B','I','N','G','O'];
-  html += '<tr>';
-  for (let c = 0; c < 5; c++) {
-    html += `<th>${letras[c]}</th>`;
-  }
-  html += '</tr>';
-
-  // Filas con números
-  for (let r = 0; r < 5; r++) {
-    html += '<tr>';
-    for (let c = 0; c < 5; c++) {
-      const val = carton[r][c];
-      const classes = (val.toUpperCase && val.toUpperCase() === 'X') ? 'free' : '';
-      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" onclick="cambiarColor(this)">${val}</td>`;
-    }
-    html += '</tr>';
-  }
-  return html;
-}
-
-function cambiarColor(td){
-  if (td.classList.contains('free')) return;
-  td.classList.toggle("marcado1");
-  guardarEstado();
-}
-
-function limpiarMarcas(){
-  // Quitar marcas de los cartones
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
-    td.classList.remove('marcado1');
-  });
-  guardarEstado();
-
-  // 👇 Quitar también los bordes guía
-  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td=>{
-    td.classList.remove('bordeGuia');
-  });
-
-  // 👇 Reiniciar la guía de dinámicas
-  localStorage.removeItem("guiaFigura");
-  crearGuia();
-}
-
-function quitarCartones(){
-  document.getElementById("cartonesContainer").innerHTML = '';
-  cartonesMostrados = [];
-  localStorage.removeItem("estadoCartones");
-  statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
-  // 👇 Reiniciar también la guía de dinámicas
-  localStorage.removeItem("guiaFigura"); // borrar guardado
-  crearGuia();                           // volver a dibujar la tabla vacía
-}
-
-/* Persistencia de cartones y marcas */
-function guardarEstado(){
-  const estado = {
-    cartones: cartonesMostrados.slice(),
-    marcados: []
-  };
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
-    const carton = td.dataset.carton;
-    const pos = td.dataset.pos;
-    estado.marcados.push({carton, pos});
-  });
-  localStorage.setItem("estadoCartones", JSON.stringify(estado));
-}
-
-function restaurarEstado(){
-  const estadoStr = localStorage.getItem("estadoCartones");
-  if (!estadoStr) return;
-  let estado;
-  try { estado = JSON.parse(estadoStr); } catch { return; }
-
-  if (Array.isArray(estado.cartones)) {
-    estado.cartones.forEach(num => renderCarton(num));
-  }
-  if (Array.isArray(estado.marcados)) {
-    estado.marcados.forEach(m => {
-      const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
-      if (td) td.classList.add('marcado1');
-    });
-  }
-}
-
-/* Zoom proporcional perfecto (+ y -) */
-function ajustarZoom(delta){
-  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
-  escala += delta;
-  if (escala < 0.5) escala = 0.5; // mínimo
-  if (escala > 2) escala = 2;     // máximo
-  document.documentElement.style.setProperty('--escalaCarton', escala);
-  localStorage.setItem("zoomCarton", escala);
-}
-
-/* Temas */
-function cambiarTema(color){
-  if (color === 'azul'){
-    document.documentElement.style.setProperty('--fondo', '#121212');
-    document.documentElement.style.setProperty('--carton', '#1b1b1b');
-    document.documentElement.style.setProperty('--texto', '#ffffff');
-    document.documentElement.style.setProperty('--marcado', '#2196f3');
-    document.documentElement.style.setProperty('--borde', '#ada8a8');
-    document.documentElement.style.setProperty('--free-bg', '#444444');
-  } else if (color === 'verde'){
-    // Tema claro como pediste
-    document.documentElement.style.setProperty('--fondo', '#ffffff');   // fondo página blanco
-    document.documentElement.style.setProperty('--carton', '#f5f5f5');  // cartón gris clarito
-    document.documentElement.style.setProperty('--texto', '#000000');   // números en negro
-    document.documentElement.style.setProperty('--marcado', '#4caf50'); // marcado verde
-    document.documentElement.style.setProperty('--borde', '#333333');   // bordes visibles sobre blanco
-    document.documentElement.style.setProperty('--free-bg', '#e0e0e0'); // free más suave
-  } else if (color === "morado"){
-    document.documentElement.style.setProperty('--fondo', '#6a1b9a');   // fondo morado
-    document.documentElement.style.setProperty('--carton', '#f8bbd0');  // cartones rosados
-    document.documentElement.style.setProperty('--texto', '#000000');   // números en negro
-    document.documentElement.style.setProperty('--cuadro', '#ffffff');  // cuadros blancos
-    document.documentElement.style.setProperty('--marcado', '#e91e63'); // casillas marcadas fucsia
-  }
-  localStorage.setItem("temaBingo", color);
-}
-
-/* =========================
-   Guía de figura 5x5
-   ========================= */
-function crearGuia(){
-  const tabla = document.getElementById("tablaGuia");
-  tabla.innerHTML = '';
-  for(let r=0; r<5; r++){
-    const fila = document.createElement("tr");
-    for(let c=0; c<5; c++){
-      const celda = document.createElement("td");
-      celda.dataset.pos = `${r},${c}`;
-      if(r === 2 && c === 2){
-        celda.textContent = 'X';
-        celda.classList.add('centro');
-      } else {
-        celda.addEventListener('click', () => {
-          celda.classList.toggle('relleno');  // guía se rellena
-          guardarGuia();
-          aplicarGuiaBordes();                 // cartones solo borde
-        });
-      }
-      fila.appendChild(celda);
-    }
-    tabla.appendChild(fila);
-  }
-}
-
-/* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
-function aplicarGuiaBordes(){
-  // Limpiar bordes anteriores
-  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td => {
-    td.classList.remove('bordeGuia');
-  });
-
-  // Agregar bordes según guía
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
-    const pos = celda.dataset.pos;
-    document.querySelectorAll(`#cartonesContainer td[data-pos="${pos}"]`).forEach(td => {
-      td.classList.add('bordeGuia');
-    });
-  });
-}
-
-/* Persistencia de la figura guía */
-function guardarGuia(){
-  const rellenos = [];
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
-    rellenos.push(celda.dataset.pos);
-  });
-  localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
-}
-
-function restaurarGuia(){
-  const data = localStorage.getItem('guiaFigura');
-  if (!data) return;
-  let rellenos;
-  try { rellenos = JSON.parse(data); } catch { return; }
-  rellenos.forEach(pos => {
-    const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
-    if (celda) celda.classList.add('relleno');
-  });
-}
-
-/* Reaplicar guía cuando se agregan nuevos cartones (ya se llama en agregarCarton) */
-
-</script>
+  <footer>
+    &copy; 2025 BingoMagic.online — Diversión mágica en cada partida
+  </footer>
 </body>
 </html>
-
-
-
-
-
-
-
-
