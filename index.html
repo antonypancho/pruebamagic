@@ -66,21 +66,15 @@
       margin: 28px auto;
       max-width: 720px;
       width: 100%;
-      aspect-ratio: 16 / 9;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
 
     .video-container iframe {
-  width: 100%;
-  height: 100%;
-}
-
-@media (max-width: 420px) {
-  .video-container {
-    height: 220px;
-  }
+      width: 100%;
+      height: 100%;
+    }
 
     .buttons {
       display: flex;
@@ -140,28 +134,6 @@
       font-weight: 600;
     }
 
-    .btn.secondary {
-      padding: 16px 24px;
-      font-size: 1.05rem;
-      font-weight: 700;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
-      color: #f2f4ff;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      text-decoration: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 200px;
-    }
-
-    .btn.secondary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    }
-
     .floating-whatsapp {
       position: fixed;
       bottom: 20px;
@@ -208,9 +180,8 @@
         font-size: 0.9rem;
       }
 
-      .btn.secondary {
-        font-size: 0.95rem;
-        padding: 12px 16px;
+      .video-container {
+        height: 220px;
       }
     }
   </style>
@@ -224,6 +195,18 @@
       Marca tus casillas, canta ¡Bingo! y disfruta de la magia.
     </p>
   </header>
+
+  <!-- Video insertado con autoplay -->
+  <div class="video-container">
+    <iframe
+      src="https://drive.google.com/file/d/1Ra8jRNvNVFcQmrJ0JdW2d932CcGHX-lI/preview?autoplay=1"
+      title="Video BingoMagic"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen
+    ></iframe>
+  </div>
+
   <div class="buttons">
     <!-- Tarjeta 8:00PM -->
     <a href="whatsapp://chat?code=Cz8wYvYq5XiDqq5M02ZkLY" class="bingo-card">
@@ -235,7 +218,8 @@
       </ul>
       <div class="click-hint">👆 Click aquí →</div>
     </a>
-        <!-- Tarjeta 10:00PM -->
+
+    <!-- Tarjeta 10:00PM -->
     <a href="whatsapp://chat?code=GLY4MmWwnyJ730G2QpDAUo" class="bingo-card">
       <h2>🌙 Bingo Magic Night 10:00PM</h2>
       <ul>
@@ -244,29 +228,16 @@
         <li>Rondas: <strong>6</strong> (diarias)</li>
       </ul>
       <div class="click-hint">👆 Click aquí →</div>
-      </a>
+    </a>
   </div>
-  
+
   <!-- Botón flotante de soporte vía WhatsApp -->
   <a href="https://wa.me/message/Y6XR7C5SG2FBB1" target="_blank" class="floating-whatsapp" title="Ayuda vía WhatsApp">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Soporte" />
   </a>
-
-<!-- Video insertado con autoplay -->
-<div class="video-container">
-  <iframe
-    src="https://drive.google.com/file/d/1Ra8jRNvNVFcQmrJ0JdW2d932CcGHX-lI/preview?autoplay=1"
-    title="Video BingoMagic"
-    frameborder="0"
-    allow="autoplay; encrypted-media"
-    allowfullscreen
-  ></iframe>
-</div>
 
   <footer>
     &copy; 2025 BingoMagic.online — Diversión mágica en cada partida
   </footer>
 </body>
 </html>
-
-
